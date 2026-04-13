@@ -93,7 +93,7 @@ function formatDate(date: Date | null | undefined) {
 						</div>
 						<a href={`/posts/${featuredPost.id}`} class="featured-image-link">
 							<div class="featured-image">
-								<Image image={featuredPost.data.featured_image} />
+								<Image image={featuredPost.data.featured_image} priority fetchpriority="high" sizes="(min-width: 900px) 50vw, 100vw" />
 							</div>
 						</a>
 					</div>

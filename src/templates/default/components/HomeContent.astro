@@ -50,7 +50,7 @@ function formatDate(date: Date | null | undefined) {
 					<div class="featured-grid">
 						<a href={`/posts/${featuredPost.id}`} class="featured-image-link">
 							<div class="featured-image">
-								<Image image={featuredPost.data.featured_image} />
+								<Image image={featuredPost.data.featured_image} priority fetchpriority="high" sizes="(min-width: 900px) 66vw, 100vw" />
 							</div>
 						</a>
 						<div class="featured-content">
