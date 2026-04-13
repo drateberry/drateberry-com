@@ -32,7 +32,7 @@ const { post, slug, bylines, tags, readingTime, publishDate, otherPostsWithTags 
 	{
 		post.data.featured_image && (
 			<div class="article-hero" {...post.edit.featured_image}>
-				<Image image={post.data.featured_image} />
+				<Image image={post.data.featured_image} priority fetchpriority="high" sizes="(min-width: 1200px) 1200px, 100vw" />
 			</div>
 		)
 	}
