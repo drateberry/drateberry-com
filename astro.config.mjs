@@ -25,4 +25,12 @@ export default defineConfig({
 		}),
 	],
 	devToolbar: { enabled: false },
+	vite: {
+		optimizeDeps: {
+			exclude: [
+				"@tiptap/extension-collaboration",
+				"@tiptap/y-tiptap",
+			],
+		},
+	},
 });

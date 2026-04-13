@@ -1,0 +1,47 @@
+/*
+  drateberry-com theme — Emerald accent, monospace-forward, soft dark.
+*/
+
+:root {
+	/* Colors - Light mode */
+	--color-accent: #10b981;
+	--color-accent-hover: #0d9668;
+	--color-on-accent: white;
+
+	/* Letter spacing — tighter for monospace headings */
+	--tracking-tight: -0.01em;
+	--tracking-snug: -0.005em;
+
+	/* Layout — 2-column post (no left meta sidebar) */
+	--meta-col-width: 0px;
+}
+
+/* Dark mode via system preference */
+@media (prefers-color-scheme: dark) {
+	:root:not(.light) {
+		--color-bg: #1a1a1a;
+		--color-bg-subtle: #1f1f1f;
+		--color-text: #ededed;
+		--color-text-secondary: #a0a0a0;
+		--color-muted: #6b6b6b;
+		--color-border: #2e2e2e;
+		--color-border-subtle: #252525;
+		--color-surface: #262626;
+		--color-accent: #34d399;
+		--color-accent-hover: #6ee7b7;
+	}
+}
+
+/* Explicit dark mode */
+:root.dark {
+	--color-bg: #1a1a1a;
+	--color-bg-subtle: #1f1f1f;
+	--color-text: #ededed;
+	--color-text-secondary: #a0a0a0;
+	--color-muted: #6b6b6b;
+	--color-border: #2e2e2e;
+	--color-border-subtle: #252525;
+	--color-surface: #262626;
+	--color-accent: #34d399;
+	--color-accent-hover: #6ee7b7;
+}
