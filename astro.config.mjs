@@ -32,5 +32,18 @@ export default defineConfig({
 				"@tiptap/y-tiptap",
 			],
 		},
+		plugins: [
+			{
+				name: "externalize-tiptap-optional-deps",
+				resolveId(id) {
+					if (
+						id === "@tiptap/extension-collaboration" ||
+						id === "@tiptap/y-tiptap"
+					) {
+						return { id, external: true };
+					}
+				},
+			},
+		],
 	},
 });
