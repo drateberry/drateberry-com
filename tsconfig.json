@@ -3,7 +3,10 @@
 	"compilerOptions": {
 		"types": [
 			"node"
-		]
+		],
+		"paths": {
+			"@template/*": ["./src/templates/drateberry-com/*"]
+		}
 	},
 	"include": [
 		"src",

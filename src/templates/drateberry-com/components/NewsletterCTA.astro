@@ -1,0 +1,113 @@
+---
+interface Props {
+	compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<section class:list={["newsletter", { "newsletter--compact": compact }]}>
+	<div class="newsletter-inner">
+		<h3 class="newsletter-title">Stay in the loop</h3>
+		<p class="newsletter-desc">Get notified when I publish something new.</p>
+		<form class="newsletter-form" data-newsletter-form>
+			<input
+				type="email"
+				placeholder="you@example.com"
+				class="newsletter-input"
+				required
+				aria-label="Email address"
+			/>
+			<button type="submit" class="newsletter-btn">Subscribe</button>
+		</form>
+	</div>
+</section>
+
+<style>
+	.newsletter {
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		background: var(--color-bg-subtle);
+		padding: var(--spacing-10) var(--spacing-8);
+		text-align: center;
+	}
+
+	.newsletter--compact {
+		padding: var(--spacing-6) var(--spacing-6);
+	}
+
+	.newsletter-inner {
+		max-width: 420px;
+		margin: 0 auto;
+	}
+
+	.newsletter-title {
+		font-family: var(--font-mono);
+		font-size: var(--font-size-xl);
+		font-weight: 600;
+		margin-bottom: var(--spacing-2);
+	}
+
+	.newsletter--compact .newsletter-title {
+		font-size: var(--font-size-lg);
+	}
+
+	.newsletter-desc {
+		font-size: var(--font-size-sm);
+		color: var(--color-muted);
+		margin-bottom: var(--spacing-5);
+	}
+
+	.newsletter-form {
+		display: flex;
+		gap: var(--spacing-2);
+	}
+
+	.newsletter-input {
+		flex: 1;
+		padding: var(--spacing-2) var(--spacing-3);
+		font-family: var(--font-mono);
+		font-size: var(--font-size-sm);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		background: var(--color-bg);
+		color: var(--color-text);
+		transition:
+			border-color var(--transition-fast),
+			box-shadow var(--transition-fast);
+	}
+
+	.newsletter-input::placeholder {
+		color: var(--color-muted);
+	}
+
+	.newsletter-input:focus {
+		outline: none;
+		border-color: var(--color-accent);
+		box-shadow: 0 0 0 3px var(--color-accent-ring);
+	}
+
+	.newsletter-btn {
+		padding: var(--spacing-2) var(--spacing-5);
+		font-family: var(--font-mono);
+		font-size: var(--font-size-sm);
+		font-weight: 500;
+		background: var(--color-accent);
+		color: var(--color-on-accent);
+		border: none;
+		border-radius: var(--radius);
+		cursor: pointer;
+		transition: background var(--transition-fast);
+		white-space: nowrap;
+	}
+
+	.newsletter-btn:hover {
+		background: var(--color-accent-hover);
+	}
+
+	@media (max-width: 480px) {
+		.newsletter-form {
+			flex-direction: column;
+		}
+	}
+</style>
