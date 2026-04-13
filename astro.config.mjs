@@ -32,5 +32,13 @@ export default defineConfig({
 				"@tiptap/y-tiptap",
 			],
 		},
+		build: {
+			rollupOptions: {
+				external: [
+					"@tiptap/extension-collaboration",
+					"@tiptap/y-tiptap",
+				],
+			},
+		},
 	},
 });
