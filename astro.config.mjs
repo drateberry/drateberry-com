@@ -34,13 +34,26 @@ export default defineConfig({
 		},
 		plugins: [
 			{
-				name: "externalize-tiptap-optional-deps",
+				name: "stub-tiptap-optional-deps",
+				enforce: "pre",
 				resolveId(id) {
-					if (
-						id === "@tiptap/extension-collaboration" ||
-						id === "@tiptap/y-tiptap"
-					) {
-						return { id, external: true };
+					if (id === "@tiptap/extension-collaboration") {
+						return "\0stub-tiptap-collaboration";
+					}
+					if (id === "@tiptap/y-tiptap") {
+						return "\0stub-tiptap-y-tiptap";
+					}
+				},
+				load(id) {
+					if (id === "\0stub-tiptap-collaboration") {
+						return "export const isChangeOrigin = () => false;";
+					}
+					if (id === "\0stub-tiptap-y-tiptap") {
+						return [
+							"export const absolutePositionToRelativePosition = () => null;",
+							"export const relativePositionToAbsolutePosition = () => null;",
+							"export const ySyncPluginKey = Symbol('ySyncPluginKey-stub');",
+						].join("\n");
 					}
 				},
 			},
