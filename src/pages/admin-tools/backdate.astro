@@ -1,0 +1,265 @@
+---
+import { hasPermission } from "@emdash-cms/auth";
+import { getEmDashCollection } from "emdash";
+
+export const prerender = false;
+
+const { user } = Astro.locals;
+
+if (!user) {
+	const next = encodeURIComponent(Astro.url.pathname);
+	return Astro.redirect(`/_emdash/admin/login?next=${next}`);
+}
+
+if (!hasPermission(user, "content:edit_any")) {
+	return new Response("Forbidden: requires Editor role or higher.", {
+		status: 403,
+	});
+}
+
+const { entries: posts } = await getEmDashCollection("posts");
+
+const sortedPosts = posts.toSorted((a, b) => {
+	const ta = a.data.publishedAt?.getTime() ?? 0;
+	const tb = b.data.publishedAt?.getTime() ?? 0;
+	return tb - ta;
+});
+
+/** Format a Date as `YYYY-MM-DDTHH:MM` for <input type="datetime-local">. */
+function toLocalInputValue(d: Date | null | undefined): string {
+	if (!d) return "";
+	const pad = (n: number) => String(n).padStart(2, "0");
+	return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Backdate Posts — Admin Tools</title>
+		<style>
+			body {
+				font-family:
+					-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 2rem 1.5rem;
+				color: #222;
+				background: #fafafa;
+			}
+			h1 {
+				font-size: 1.5rem;
+				margin: 0 0 0.25rem;
+			}
+			.sub {
+				color: #666;
+				margin: 0 0 1.5rem;
+				font-size: 0.9rem;
+			}
+			.back-link {
+				display: inline-block;
+				margin-bottom: 1.25rem;
+				color: #10b981;
+				text-decoration: none;
+				font-size: 0.9rem;
+			}
+			.back-link:hover {
+				text-decoration: underline;
+			}
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				background: #fff;
+				border: 1px solid #e5e5e5;
+				border-radius: 6px;
+				overflow: hidden;
+				font-size: 0.9rem;
+			}
+			th,
+			td {
+				padding: 0.625rem 0.75rem;
+				text-align: left;
+				border-bottom: 1px solid #f0f0f0;
+				vertical-align: middle;
+			}
+			th {
+				background: #f6f6f6;
+				font-weight: 600;
+				font-size: 0.8rem;
+				text-transform: uppercase;
+				letter-spacing: 0.03em;
+				color: #555;
+			}
+			tr:last-child td {
+				border-bottom: none;
+			}
+			.title {
+				font-weight: 500;
+				color: #111;
+			}
+			.slug {
+				color: #888;
+				font-size: 0.8rem;
+				font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+			}
+			input[type="datetime-local"] {
+				padding: 0.3rem 0.4rem;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				font-family: inherit;
+				font-size: 0.85rem;
+			}
+			button {
+				padding: 0.35rem 0.8rem;
+				border: 1px solid #10b981;
+				background: #10b981;
+				color: #fff;
+				border-radius: 4px;
+				font-size: 0.85rem;
+				cursor: pointer;
+			}
+			button:hover {
+				background: #0d9668;
+				border-color: #0d9668;
+			}
+			button:disabled {
+				background: #9ca3af;
+				border-color: #9ca3af;
+				cursor: default;
+			}
+			.status {
+				font-size: 0.8rem;
+				margin-left: 0.5rem;
+			}
+			.status.ok {
+				color: #059669;
+			}
+			.status.err {
+				color: #dc2626;
+			}
+			.empty {
+				padding: 2rem;
+				text-align: center;
+				color: #888;
+				background: #fff;
+				border: 1px solid #e5e5e5;
+				border-radius: 6px;
+			}
+		</style>
+	</head>
+	<body>
+		<a href="/_emdash/admin" class="back-link">← Back to admin</a>
+		<h1>Backdate Posts</h1>
+		<p class="sub">
+			Set each post's publish date directly. Useful for aligning imported
+			posts to their original dates. Uses 24-hour local time.
+		</p>
+
+		{
+			sortedPosts.length === 0 ? (
+				<p class="empty">No posts yet.</p>
+			) : (
+				<table>
+					<thead>
+						<tr>
+							<th style="width: 45%">Post</th>
+							<th style="width: 40%">Published at</th>
+							<th style="width: 15%">Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{sortedPosts.map((post) => (
+							<tr
+								data-row
+								data-id={post.data.id}
+								data-type="posts"
+							>
+								<td>
+									<div class="title">
+										{post.data.title ?? "(untitled)"}
+									</div>
+									<div class="slug">{post.id}</div>
+								</td>
+								<td>
+									<input
+										type="datetime-local"
+										data-input
+										value={toLocalInputValue(
+											post.data.publishedAt,
+										)}
+									/>
+								</td>
+								<td>
+									<button data-save type="button">
+										Save
+									</button>
+									<span class="status" data-status />
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			)
+		}
+
+		<script is:inline>
+			document.querySelectorAll("[data-row]").forEach((row) => {
+				const saveBtn = row.querySelector("[data-save]");
+				const input = row.querySelector("[data-input]");
+				const status = row.querySelector("[data-status]");
+				if (!saveBtn || !input || !status) return;
+
+				saveBtn.addEventListener("click", async () => {
+					const id = row.dataset.id;
+					const type = row.dataset.type;
+					const localValue = input.value;
+					if (!id || !type) return;
+
+					status.textContent = "";
+					status.className = "status";
+
+					// Convert "YYYY-MM-DDTHH:MM" (local) to ISO string (UTC).
+					let publishedAt = null;
+					if (localValue) {
+						const d = new Date(localValue);
+						if (Number.isNaN(d.getTime())) {
+							status.textContent = "Invalid date";
+							status.className = "status err";
+							return;
+						}
+						publishedAt = d.toISOString();
+					}
+
+					saveBtn.disabled = true;
+					try {
+						const res = await fetch("/api/admin-tools/backdate", {
+							method: "POST",
+							headers: { "content-type": "application/json" },
+							body: JSON.stringify({ type, id, publishedAt }),
+						});
+						const data = await res
+							.json()
+							.catch(() => ({ error: "bad_response" }));
+						if (!res.ok || !data.ok) {
+							status.textContent =
+								"Error: " + (data.error || res.status);
+							status.className = "status err";
+						} else {
+							status.textContent = "Saved";
+							status.className = "status ok";
+						}
+					} catch (err) {
+						status.textContent =
+							"Error: " +
+							(err instanceof Error ? err.message : "unknown");
+						status.className = "status err";
+					} finally {
+						saveBtn.disabled = false;
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
