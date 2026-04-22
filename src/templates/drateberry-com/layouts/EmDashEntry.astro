@@ -1,0 +1,132 @@
+---
+/**
+ * Entrypoint used by EmDash's `contentRoutes` option.
+ * Receives { entry, collection, params } via Astro.props and dispatches
+ * by collection. Each branch is equivalent to the corresponding
+ * src/pages/<collection>/[slug].astro file, but the entry is already
+ * resolved by resolveEmDashPath against the collection's urlPattern.
+ */
+import { getEmDashCollection, getEntryTerms, getSeoMeta } from "emdash";
+import type { ResolvePathResult } from "emdash";
+import Base from "@template/layouts/Base.astro";
+import PostArticle from "@template/components/PostArticle.astro";
+import StaticPageContent from "@template/components/StaticPageContent.astro";
+import { getReadingTime } from "../../../utils/reading-time";
+
+const { entry, collection, params } = Astro.props as ResolvePathResult;
+const slug = params.slug ?? entry.id;
+
+function getImageUrl(img: unknown): string | undefined {
+	if (!img || typeof img !== "object") return undefined;
+	const image = img as Record<string, unknown>;
+	if (typeof image.src === "string" && image.src) {
+		return image.src.startsWith("http")
+			? image.src
+			: `${Astro.url.origin}${image.src}`;
+	}
+	const meta = image.meta as Record<string, unknown> | undefined;
+	const storageKey =
+		(typeof meta?.storageKey === "string" ? meta.storageKey : undefined) ||
+		(typeof image.id === "string" ? image.id : undefined);
+	if (storageKey) {
+		return `${Astro.url.origin}/_emdash/api/media/file/${storageKey}`;
+	}
+	return undefined;
+}
+
+type PostData = {
+	id: string;
+	featured_image?: unknown;
+	content?: unknown;
+	bylines?: unknown[];
+	publishedAt?: Date;
+	updatedAt: Date;
+	title: string;
+};
+
+let postProps: {
+	post: typeof entry;
+	seo: ReturnType<typeof getSeoMeta>;
+	tags: Awaited<ReturnType<typeof getEntryTerms>>;
+	bylines: unknown[];
+	readingTime: ReturnType<typeof getReadingTime>;
+	publishDate: string | null;
+	otherPostsWithTags: Array<{ post: unknown; tags: unknown; bylines: unknown[] }>;
+	featuredImageUrl: string | undefined;
+} | null = null;
+
+if (collection === "posts") {
+	const post = entry as typeof entry & { data: PostData };
+	const featuredImageUrl = getImageUrl(post.data.featured_image);
+	const seo = getSeoMeta(post, {
+		siteTitle: "My Blog",
+		siteUrl: Astro.url.origin,
+		path: Astro.url.pathname,
+		defaultOgImage: featuredImageUrl,
+	});
+	const tags = await getEntryTerms("posts", post.data.id, "tag");
+	const bylines = (post.data.bylines ?? []) as unknown[];
+	const readingTime = getReadingTime(post.data.content as never);
+	const { entries: recentPosts } = await getEmDashCollection("posts", {
+		orderBy: { published_at: "desc" },
+		limit: 4,
+	});
+	const otherPosts = recentPosts.filter((p) => p.id !== post.id).slice(0, 3);
+	const otherPostsWithTags = await Promise.all(
+		otherPosts.map(async (p) => {
+			const postTags = await getEntryTerms("posts", p.data.id, "tag");
+			const postBylines = p.data.bylines ?? [];
+			return { post: p, tags: postTags, bylines: postBylines };
+		}),
+	);
+	const publishDate =
+		post.data.publishedAt?.toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		}) ?? null;
+	postProps = {
+		post,
+		seo,
+		tags,
+		bylines,
+		readingTime,
+		publishDate,
+		otherPostsWithTags,
+		featuredImageUrl,
+	};
+}
+---
+
+{postProps && (
+	<Base
+		title={postProps.seo.title}
+		description={postProps.seo.description}
+		image={postProps.seo.ogImage}
+		canonical={postProps.seo.canonical}
+		robots={postProps.seo.robots}
+		type="article"
+		publishedTime={(postProps.post.data as PostData).publishedAt?.toISOString() ?? null}
+		modifiedTime={(postProps.post.data as PostData).updatedAt.toISOString()}
+		content={{ collection: "posts", id: (postProps.post.data as PostData).id, slug }}
+	>
+		<PostArticle
+			post={postProps.post}
+			slug={slug}
+			bylines={postProps.bylines as never}
+			tags={postProps.tags}
+			readingTime={postProps.readingTime}
+			publishDate={postProps.publishDate}
+			otherPostsWithTags={postProps.otherPostsWithTags as never}
+		/>
+	</Base>
+)}
+
+{collection === "pages" && (
+	<Base
+		title={entry.data.title as string}
+		content={{ collection: "pages", id: entry.data.id as string, slug }}
+	>
+		<StaticPageContent page={entry as never} />
+	</Base>
+)}

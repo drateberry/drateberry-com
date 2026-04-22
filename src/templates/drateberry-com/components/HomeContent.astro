@@ -1,4 +1,5 @@
 ---
+import { getEntryUrl } from "emdash";
 import { Image } from "emdash/ui";
 import PostCard from "./PostCard.astro";
 import NewsletterCTA from "./NewsletterCTA.astro";
@@ -23,6 +24,11 @@ interface Props {
 }
 
 const { posts, featuredPost, featuredBylines, featuredTags, gridPostsWithTags, hasMorePosts } = Astro.props;
+
+const featuredHref = featuredPost ? await getEntryUrl("posts", featuredPost.id) : null;
+const gridHrefs = await Promise.all(
+	gridPostsWithTags.map(({ post }) => getEntryUrl("posts", post.id)),
+);
 
 function formatDate(date: Date | null | undefined) {
 	if (!date) return null;
@@ -73,7 +79,7 @@ function formatDate(date: Date | null | undefined) {
 								</span>
 							</div>
 							<a
-								href={`/posts/${featuredPost.id}`}
+								href={featuredHref ?? "#"}
 								class="featured-title-link"
 							>
 								<h1 class="featured-title">{featuredPost.data.title}</h1>
@@ -91,7 +97,7 @@ function formatDate(date: Date | null | undefined) {
 								</div>
 							)}
 						</div>
-						<a href={`/posts/${featuredPost.id}`} class="featured-image-link">
+						<a href={featuredHref ?? "#"} class="featured-image-link">
 							<div class="featured-image">
 								<Image image={featuredPost.data.featured_image} priority fetchpriority="high" sizes="(min-width: 900px) 50vw, 100vw" />
 							</div>
@@ -112,12 +118,12 @@ function formatDate(date: Date | null | undefined) {
 						)}
 					</header>
 					<div class="posts-grid">
-						{gridPostsWithTags.map(({ post, tags, bylines }) => (
+						{gridPostsWithTags.map(({ post, tags, bylines }, i) => (
 							<PostCard
 								title={post.data.title ?? "Untitled"}
 								excerpt={post.data.excerpt}
 								featuredImage={post.data.featured_image}
-								href={`/posts/${post.id}`}
+								href={gridHrefs[i] ?? "#"}
 								date={post.data.publishedAt ?? undefined}
 								readingTime={getReadingTime(post.data.content)}
 								tags={tags}

@@ -3,6 +3,9 @@
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
+	"workspaces": [
+		"packages/*"
+	],
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
@@ -13,11 +16,13 @@
 	"dependencies": {
 		"@astrojs/cloudflare": "^13.1.6",
 		"@astrojs/react": "^5.0.0",
+		"@drateberry/emdash-plugin-social-share": "*",
+		"@emdash-cms/admin": "file:vendor/emdash-cms-admin-0.6.0.tgz",
 		"@emdash-cms/cloudflare": ">=0.6.0",
 		"@emdash-cms/plugin-forms": ">=0.1.1",
 		"@emdash-cms/plugin-webhook-notifier": ">=0.1.2",
 		"astro": "^6.1.2",
-		"emdash": ">=0.6.0",
+		"emdash": "file:vendor/emdash-0.6.0.tgz",
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4"
 	},
