@@ -3,9 +3,6 @@
 	"version": "0.0.1",
 	"private": true,
 	"type": "module",
-	"workspaces": [
-		"packages/*"
-	],
 	"scripts": {
 		"dev": "astro dev",
 		"build": "astro build",
@@ -16,7 +13,7 @@
 	"dependencies": {
 		"@astrojs/cloudflare": "^13.1.6",
 		"@astrojs/react": "^5.0.0",
-		"@drateberry/emdash-plugin-social-share": "*",
+		"@drateberry/emdash-plugin-social-share": "^0.1.0",
 		"@emdash-cms/admin": "file:vendor/emdash-cms-admin-0.6.0.tgz",
 		"@emdash-cms/cloudflare": ">=0.6.0",
 		"@emdash-cms/plugin-forms": ">=0.1.1",
