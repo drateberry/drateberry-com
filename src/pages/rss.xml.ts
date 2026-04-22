@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { getEmDashCollection } from "emdash";
+import { getEmDashCollection, getEntryUrl } from "emdash";
 
 const siteTitle = "My Blog";
 const siteDescription = "A blog about software, design, and the occasional stray thought.";
@@ -12,25 +12,25 @@ export const GET: APIRoute = async ({ site, url }) => {
 		limit: 20,
 	});
 
-	const items = posts
-		.map((post) => {
-			if (!post.data.publishedAt) return null;
-			const pubDate = post.data.publishedAt.toUTCString();
+	const itemPromises = posts.map(async (post) => {
+		if (!post.data.publishedAt) return null;
+		const path = await getEntryUrl("posts", post.id);
+		if (!path) return null;
+		const pubDate = post.data.publishedAt.toUTCString();
+		const postUrl = `${siteUrl.replace(/\/$/, "")}${path}`;
+		const title = escapeXml(post.data.title || "Untitled");
+		const description = escapeXml(post.data.excerpt || "");
 
-			const postUrl = `${siteUrl}/posts/${post.id}`;
-			const title = escapeXml(post.data.title || "Untitled");
-			const description = escapeXml(post.data.excerpt || "");
-
-			return `    <item>
+		return `    <item>
       <title>${title}</title>
       <link>${postUrl}</link>
       <guid isPermaLink="true">${postUrl}</guid>
       <pubDate>${pubDate}</pubDate>
       <description>${description}</description>
     </item>`;
-		})
-		.filter(Boolean)
-		.join("\n");
+	});
+
+	const items = (await Promise.all(itemPromises)).filter(Boolean).join("\n");
 
 	const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

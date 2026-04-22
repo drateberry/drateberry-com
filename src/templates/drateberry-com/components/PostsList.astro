@@ -1,4 +1,5 @@
 ---
+import { getEntryUrl } from "emdash";
 import { getReadingTime } from "../../../utils/reading-time";
 
 interface Props {
@@ -31,6 +32,13 @@ interface Props {
 
 const { totalCount, postsWithTags } = Astro.props;
 
+const entries = await Promise.all(
+	postsWithTags.map(async (entry) => ({
+		...entry,
+		href: (await getEntryUrl("posts", entry.post.id)) ?? "#",
+	})),
+);
+
 const formatDate = (date: Date) =>
 	date.toLocaleDateString("en-US", {
 		year: "numeric",
@@ -53,9 +61,9 @@ const formatDate = (date: Date) =>
 			<p class="empty">No posts yet.</p>
 		) : (
 			<div class="posts-list">
-				{postsWithTags.map(({ post, tags, bylines }) => (
+				{entries.map(({ post, tags, bylines, href }) => (
 					<article class="post-item">
-						<a href={`/posts/${post.id}`} class="post-link">
+						<a href={href} class="post-link">
 							<div class="post-meta">
 								{bylines.length > 0 && (
 									<>
