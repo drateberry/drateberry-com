@@ -70,6 +70,8 @@ const isLoggedIn = !!Astro.locals.user;
 			href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
 			rel="stylesheet"
 		/>
+		<link rel="stylesheet" href="/fa/css/fontawesome.css" />
+		<link rel="stylesheet" href="/fa/css/brands.css" />
 		<title>{fullTitle}</title>
 		<EmDashHead page={pageCtx} />
 		<script is:inline>
@@ -109,20 +111,48 @@ const isLoggedIn = !!Astro.locals.user;
 						}
 					</div>
 					<div class="nav-social">
+					<a
+							href="https://www.linkedin.com/in/drateberry/"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="social-link"
+							aria-label="LinkedIn"
+						><i class="fa-brands fa-linkedin"></i></a>
 						<a
 							href="https://github.com/drateberry"
 							target="_blank"
 							rel="noopener noreferrer"
 							class="social-link"
 							aria-label="GitHub"
-						>GH</a>
+						><i class="fa-brands fa-github" aria-hidden="true"></i></a>
 						<a
 							href="https://x.com/drateberry"
 							target="_blank"
 							rel="noopener noreferrer"
 							class="social-link"
 							aria-label="X / Twitter"
-						>X</a>
+						><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></a>
+						<a
+							href="https://bsky.app/profile/drate.bsky.social"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="social-link"
+							aria-label="Blueskey"
+						><i class="fa-brands fa-bluesky"></i></a>
+						<a
+							href="https://mastodon.social/@drateberry"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="social-link"
+							aria-label="Mastodon"
+						><i class="fa-brands fa-mastodon"></i></a>
+						<a
+							href="https://www.instagram.com/drateberry/"
+							target="_blank"
+							rel="noopener noreferrer"
+							class="social-link"
+							aria-label="Instagram"
+						><i class="fa-brands fa-instagram"></i></a>
 					</div>
 					{
 						isLoggedIn && (
@@ -621,9 +651,10 @@ const isLoggedIn = !!Astro.locals.user;
 			}
 
 			.social-link {
-				font-family: var(--font-mono);
-				font-size: var(--font-size-xs);
-				font-weight: 500;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				font-size: var(--font-size-lg);
 				color: var(--color-muted);
 				text-decoration: none;
 				transition: color var(--transition-fast);
