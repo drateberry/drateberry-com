@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
-import { getEmDashCollection, getEntryUrl } from "emdash";
+import { getEmDashCollection } from "emdash";
+import { getEntryUrl } from "../utils/entry-url";
 
 const siteTitle = "My Blog";
 const siteDescription = "A blog about software, design, and the occasional stray thought.";

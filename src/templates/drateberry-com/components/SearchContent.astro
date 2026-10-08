@@ -1,5 +1,5 @@
 ---
-import { getEntryUrl } from "emdash";
+import { getEntryUrl } from "../../../utils/entry-url";
 import PostCard from "./PostCard.astro";
 import { getReadingTime } from "../../../utils/reading-time";
 
@@ -12,7 +12,7 @@ interface Props {
 			excerpt?: string;
 			featured_image?: any;
 			publishedAt?: Date | null;
-			content: any;
+			content?: any;
 		};
 	}>;
 }

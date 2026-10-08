@@ -5,3 +5,4 @@ uploads
 data.db
 .wrangler
 packages/
+.emdash
