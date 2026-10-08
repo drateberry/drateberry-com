@@ -5,3 +5,5 @@ uploads
 data.db
 .wrangler
 packages/
+.emdash
+.dev.vars

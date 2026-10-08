@@ -1,0 +1,21 @@
+---
+/**
+ * Content entry catch-all. Resolves any path not served by a more specific
+ * page against the collections' urlPatterns and renders EmDashEntry.
+ *
+ * The `/[first]/[...rest]` shape (rather than `/[...all]`) means `/` never
+ * matches, so src/pages/index.astro keeps the homepage. Static and
+ * partly-static routes (/posts, /category/[slug], /_emdash/*) outrank it.
+ */
+import EmDashEntry from "@template/layouts/EmDashEntry.astro";
+import { resolveEntryPath } from "../../utils/entry-url";
+
+const path = Astro.url.pathname.replace(/\/$/, "");
+const result = await resolveEntryPath(path);
+
+if (!result) {
+	return Astro.rewrite("/404");
+}
+---
+
+<EmDashEntry entry={result.entry} collection={result.collection} params={result.params} />

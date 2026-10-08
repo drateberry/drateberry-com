@@ -1,10 +1,10 @@
 ---
 /**
- * Entrypoint used by EmDash's `contentRoutes` option.
+ * Rendered by the src/pages/[first]/[...rest].astro catch-all.
  * Receives { entry, collection, params } via Astro.props and dispatches
  * by collection. Each branch is equivalent to the corresponding
  * src/pages/<collection>/[slug].astro file, but the entry is already
- * resolved by resolveEmDashPath against the collection's urlPattern.
+ * resolved by resolveEntryPath against the collection's urlPattern.
  */
 import { getEmDashCollection, getEntryTerms, getSeoMeta } from "emdash";
 import type { ResolvePathResult } from "emdash";

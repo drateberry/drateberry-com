@@ -1,15 +1,14 @@
 ---
+import type { EditProxy } from "emdash";
 import { PortableText } from "emdash/ui";
 
 interface Props {
 	page: {
 		data: {
 			title: string;
-			content: any;
+			content?: any;
 		};
-		edit: {
-			title: Record<string, string>;
-		};
+		edit: EditProxy;
 	};
 }
 

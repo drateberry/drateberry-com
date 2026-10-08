@@ -1,0 +1,24 @@
+{
+	"name": "@drateberry/emdash-plugin-matomo",
+	"version": "0.2.0",
+	"description": "Matomo analytics for EmDash CMS - injects the Matomo tracker into public pages",
+	"type": "module",
+	"main": "src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"files": [
+		"src"
+	],
+	"keywords": [
+		"emdash",
+		"cms",
+		"plugin",
+		"matomo",
+		"analytics"
+	],
+	"license": "0BSD",
+	"peerDependencies": {
+		"emdash": ">=1.2.0"
+	}
+}

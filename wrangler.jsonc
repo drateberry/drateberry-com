@@ -19,6 +19,11 @@
 			"bucket_name": "drateberry-com-media","preview_bucket_name": "drateberry-com-media",
 		},
 	],
+	// Drives the scheduled() handler in src/worker.ts (scheduled publishing,
+	// plugin cron tasks, automatic backups). Keep in sync with generalCron there.
+	"triggers": {
+		"crons": ["* * * * *"],
+	},
 	"observability": {
 		"enabled": true,
 	},
